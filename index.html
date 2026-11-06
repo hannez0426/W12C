@@ -4,86 +4,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Post Space | Axios Project</title>
+  <title>My Axios Project</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
-    <h2>POST SPACE</h2>
-    <p>My Post Manager</p>
+    <h1>My Post Manager</h1>
+    <p>Learning Axios Requests</p>
   </header>
 
   <main>
-    <section class="intro">
-      <h1>Share Your Thoughts</h1>
-      <p>Create, update, delete and explore posts using Axios.</p>
-    </section>
+    <h2>Create a Post</h2>
 
-    <!-- POST REQUEST -->
-    <section class="form-section">
-      <h2>Create a New Post</h2>
+    <form id="postForm">
+      <input type="text" id="title" placeholder="Post Title" required>
+      <textarea id="body" placeholder="Write your post..." required></textarea>
+      <button type="submit">Send Post</button>
+    </form>
 
-      <form id="postForm">
-        <label for="postTitle">Post Title</label>
-        <input
-          type="text"
-          id="postTitle"
-          placeholder="What's on your mind?"
-          required
-        >
+    <p id="postMessage"></p>
 
-        <label for="postBody">Your Message</label>
-        <textarea
-          id="postBody"
-          placeholder="Write your post here..."
-          required
-        ></textarea>
+    <h2>Update a Post</h2>
+    <button id="updateBtn">Update Post #1</button>
+    <p id="updateMessage"></p>
 
-        <button type="submit" id="sendBtn">
-          Send Post
-        </button>
-      </form>
+    <h2>Delete a Post</h2>
+    <button id="deleteBtn">Delete Post #1</button>
+    <p id="deleteMessage"></p>
 
-      <p id="postMessage" class="message" role="status"></p>
-    </section>
-
-    <!-- PATCH AND DELETE REQUESTS -->
-    <section class="actions">
-      <div class="action-card">
-        <h2>Update Post</h2>
-        <p>Update the title of post #1.</p>
-        <button id="patchBtn">PATCH Post</button>
-        <p id="patchMessage" class="message" role="status"></p>
-      </div>
-
-      <div class="action-card">
-        <h2>Delete Post</h2>
-        <p>Delete post #1.</p>
-        <button id="deleteBtn">DELETE Post</button>
-        <p id="deleteMessage" class="message" role="status"></p>
-      </div>
-    </section>
-
-    <!-- GET REQUEST -->
-    <section class="posts-section">
-      <h2>Explore Posts</h2>
-      <p>Posts loaded automatically from the API.</p>
-
-      <p id="getMessage" class="message" role="status"></p>
-
-      <div id="postsContainer"></div>
-    </section>
+    <h2>All Posts</h2>
+    <p id="getMessage"></p>
+    <div id="posts"></div>
   </main>
 
   <footer>
-    <p>© 2026 Post Space | Axios Assignment</p>
+    <p>© 2026 My Axios Project</p>
   </footer>
 
-  <!-- Axios CDN -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-  <!-- JavaScript -->
   <script src="app.js"></script>
 </body>
 </html>

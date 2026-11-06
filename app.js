@@ -1,224 +1,96 @@
 
-const API_URL = "https://jsonplaceholder.typicode.com";
+// API URL
+const url = "https://jsonplaceholder.typicode.com/posts";
 
-// Select HTML elements
-const postForm = document.getElementById("postForm");
-const postTitle = document.getElementById("postTitle");
-const postBody = document.getElementById("postBody");
-const sendBtn = document.getElementById("sendBtn");
-
-const patchBtn = document.getElementById("patchBtn");
-const deleteBtn = document.getElementById("deleteBtn");
-
-const postsContainer = document.getElementById("postsContainer");
-
-// Display success, loading, or error messages
-function showMessage(elementId, text, type) {
-  const element = document.getElementById(elementId);
-  element.innerText = text;
-  element.className = "message " + type;
-}
-
-// POST REQUEST - Create a new post
-postForm.addEventListener("submit", async function(event) {
+// POST - Create a post
+document.getElementById("postForm").addEventListener("submit", function(event) {
   event.preventDefault();
 
-  sendBtn.disabled = true;
-  showMessage("postMessage", "Sending your post...", "loading");
+  let title = document.getElementById("title").value;
+  let body = document.getElementById("body").value;
 
-  try {
-    const response = await axios.post(API_URL + "/posts", {
-      title: postTitle.value,
-      body: postBody.value,
-      userId: 1
-    });
+  document.getElementById("postMessage").innerText = "Sending...";
 
-    console.log("POST response:", response.data);
-
-    showMessage(
-      "postMessage",
-      "Post created successfully! ID: " + response.data.id,
-      "success"
-    );
-
-    postForm.reset();
-
-  } catch (error) {
-    console.error(error);
-    showMessage(
-      "postMessage",
-      "Failed to create post. Please try again.",
-      "error"
-    );
-  } finally {
-    sendBtn.disabled = false;
-  }
+  axios.post(url, {
+    title: title,
+    body: body,
+    userId: 1
+  })
+  .then(function(response) {
+    document.getElementById("postMessage").innerText =
+      "Post created successfully!";
+    document.getElementById("postForm").reset();
+    console.log(response.data);
+  })
+  .catch(function(error) {
+    document.getElementById("postMessage").innerText =
+      "Error creating post.";
+    console.log(error);
+  });
 });
 
-// PATCH REQUEST - Update post #1
-patchBtn.addEventListener("click", async function() {
-  patchBtn.disabled = true;
-  showMessage("patchMessage", "Updating post...", "loading");
+// PATCH - Update post #1
+document.getElementById("updateBtn").addEventListener("click", function() {
+  document.getElementById("updateMessage").innerText = "Updating...";
 
-  try {
-    const response = await axios.patch(API_URL + "/posts/1", {
-      title: "Updated Post Using Axios"
-    });
-
-    console.log("PATCH response:", response.data);
-
-    showMessage(
-      "patchMessage",
-      "Post #1 updated successfully!",
-      "success"
-    );
-
-  } catch (error) {
-    console.error(error);
-    showMessage(
-      "patchMessage",
-      "Failed to update post.",
-      "error"
-    );
-  } finally {
-    patchBtn.disabled = false;
-  }
+  axios.patch(url + "/1", {
+    title: "My Updated Post"
+  })
+  .then(function(response) {
+    document.getElementById("updateMessage").innerText =
+      "Post updated successfully!";
+    console.log(response.data);
+  })
+  .catch(function(error) {
+    document.getElementById("updateMessage").innerText =
+      "Error updating post.";
+    console.log(error);
+  });
 });
 
-// DELETE REQUEST - Delete post #1
-deleteBtn.addEventListener("click", async function() {
-  deleteBtn.disabled = true;
-  showMessage("deleteMessage", "Deleting post...", "loading");
+// DELETE - Delete post #1
+document.getElementById("deleteBtn").addEventListener("click", function() {
+  document.getElementById("deleteMessage").innerText = "Deleting...";
 
-  try {
-    const response = await axios.delete(API_URL + "/posts/1");
-
-    console.log("DELETE response:", response.status);
-
-    showMessage(
-      "deleteMessage",
-      "Post #1 deleted successfully!",
-      "success"
-    );
-
-  } catch (error) {
-    console.error(error);
-    showMessage(
-      "deleteMessage",
-      "Failed to delete post.",
-      "error"
-    );
-  } finally {
-    deleteBtn.disabled = false;
-  }
+  axios.delete(url + "/1")
+  .then(function(response) {
+    document.getElementById("deleteMessage").innerText =
+      "Post deleted successfully!";
+    console.log(response.data);
+  })
+  .catch(function(error) {
+    document.getElementById("deleteMessage").innerText =
+      "Error deleting post.";
+    console.log(error);
+  });
 });
 
-// GET REQUEST - Load all posts automatically
-async function getPosts() {
-  showMessage("getMessage", "Loading posts...", "loading");
+// GET - Display all posts automatically
+axios.get(url)
+.then(function(response) {
+  let posts = response.data;
 
-  try {
-    const response = await axios.get(API_URL + "/posts");
+  document.getElementById("getMessage").innerText =
+    "Posts loaded successfully!";
 
-    postsContainer.innerHTML = "";
+  for (let post of posts) {
+    let div = document.createElement("div");
+    div.className = "post";
 
-    // Loop through every post
-    response.data.forEach(function(post) {
-      const card = document.createElement("div");
-      card.className = "post-card";
+    let heading = document.createElement("h3");
+    heading.innerText = post.title;
 
-      const number = document.createElement("span");
-      number.className = "post-number";
-      number.innerText = "POST #" + post.id;
+    let paragraph = document.createElement("p");
+    paragraph.innerText = post.body;
 
-      const title = document.createElement("h3");
-      title.innerText = post.title;
+    div.appendChild(heading);
+    div.appendChild(paragraph);
 
-      const body = document.createElement("p");
-      body.innerText = post.body;
-
-      const button = document.createElement("button");
-      button.className = "comments-btn";
-      button.innerText = "View Comments";
-
-      const commentsList = document.createElement("div");
-      commentsList.className = "comments-list";
-      commentsList.hidden = true;
-
-      // BONUS - Load comments for each post
-      button.addEventListener("click", async function() {
-        if (!commentsList.hidden) {
-          commentsList.hidden = true;
-          button.innerText = "View Comments";
-          return;
-        }
-
-        button.disabled = true;
-        commentsList.hidden = false;
-        commentsList.innerText = "Loading comments...";
-
-        try {
-          const commentsResponse = await axios.get(
-            API_URL + "/posts/" + post.id + "/comments"
-          );
-
-          commentsList.innerHTML = "";
-
-          commentsResponse.data.forEach(function(comment) {
-            const commentBox = document.createElement("div");
-            commentBox.className = "comment";
-
-            const name = document.createElement("strong");
-            name.innerText = comment.name;
-
-            const email = document.createElement("p");
-            email.innerText = comment.email;
-
-            const text = document.createElement("p");
-            text.innerText = comment.body;
-
-            commentBox.appendChild(name);
-            commentBox.appendChild(email);
-            commentBox.appendChild(text);
-
-            commentsList.appendChild(commentBox);
-          });
-
-          button.innerText = "Hide Comments";
-
-        } catch (error) {
-          console.error(error);
-          commentsList.innerText = "Failed to load comments.";
-          button.innerText = "Retry Comments";
-        } finally {
-          button.disabled = false;
-        }
-      });
-
-      card.appendChild(number);
-      card.appendChild(title);
-      card.appendChild(body);
-      card.appendChild(button);
-      card.appendChild(commentsList);
-
-      postsContainer.appendChild(card);
-    });
-
-    showMessage(
-      "getMessage",
-      response.data.length + " posts loaded successfully!",
-      "success"
-    );
-
-  } catch (error) {
-    console.error(error);
-    showMessage(
-      "getMessage",
-      "Failed to load posts. Please refresh the page.",
-      "error"
-    );
+    document.getElementById("posts").appendChild(div);
   }
-}
-
-// Run GET automatically when the page loads
-getPosts();
+})
+.catch(function(error) {
+  document.getElementById("getMessage").innerText =
+    "Error loading posts.";
+  console.log(error);
+});
